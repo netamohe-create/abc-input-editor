@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#f5f7fb">
+<title>ABCかんたん入力 v1.3.1</title>
+<style>
+
+:root{color-scheme:light;--bg:#f5f7fb;--panel:#fff;--text:#172338;--muted:#5d6c81;--line:#d8e2ed;--accent:#2458bb;--accentbg:#eaf1ff;--danger:#a62e36;--radius:14px}
+*{box-sizing:border-box}html{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-size:15px;line-height:1.45;padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+.shell{max-width:1220px;margin:auto;padding:8px 10px 30px}.head{min-height:42px;padding:5px 4px 8px;display:flex;justify-content:space-between;align-items:center;gap:6px}
+h1{font-size:19px;line-height:1.2;margin:0}.version{font-size:10px;color:#3863a8;background:#e7effe;border-radius:30px;padding:3px 7px;vertical-align:2px}.saveStatus{color:var(--muted);font-size:11px;white-space:nowrap}
+h2{font-size:17px;margin:0 0 9px}.panel{border:1px solid var(--line);background:var(--panel);border-radius:var(--radius);padding:12px;margin-bottom:9px;box-shadow:0 2px 9px rgba(25,49,85,.025)}
+.livePanel{position:sticky;top:0;z-index:20;border-color:#a9c1e8;box-shadow:0 5px 18px rgba(22,53,113,.10);padding:10px 12px;background:rgba(255,255,255,.97);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.liveTop{display:flex;align-items:center;justify-content:space-between;gap:6px}.liveTop strong{font-size:14px}.liveMeta{display:flex;justify-content:space-between;gap:6px;align-items:center;margin:5px 0 6px;color:var(--muted);font-size:11px}.liveCode{font:13px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;color:#142238;background:#f3f6fc;border:1px solid var(--line);border-radius:9px;padding:9px;white-space:pre-wrap;overflow-wrap:anywhere;max-height:84px;min-height:52px;overflow-y:auto;-webkit-overflow-scrolling:touch;margin:0}.liveFoot{margin-top:6px;display:flex;gap:8px;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted)}.liveFoot .editing{color:var(--danger);font-weight:700}.liveBtns{display:flex;gap:6px}.liveBtns button{min-height:35px;padding:5px 11px;font-size:12px}
+button{font:inherit;border:1px solid var(--line);border-radius:10px;min-height:41px;padding:8px 10px;background:#fff;color:var(--text);font-weight:650;touch-action:manipulation;cursor:pointer}button:active{transform:scale(.985)}button.primary{background:var(--accent);border-color:var(--accent);color:#fff}button.soft{background:var(--accentbg);border-color:#c6d9f7;color:#1b4e9f}button.danger{color:var(--danger)}button.active{border:2px solid #316cd0;background:var(--accentbg);color:#174b9d;padding:7px 9px}button:disabled{opacity:.42;cursor:default}
+input,select,textarea{font:inherit;border:1px solid #bac9dd;background:white;border-radius:9px;padding:8px 10px;min-height:42px;width:100%;color:var(--text)}input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid #6394ef;outline-offset:1px}
+label{font-size:13px;font-weight:650}.field{display:grid;gap:4px}.hint,.small{font-size:12px;color:var(--muted)}.hint{margin:5px 0}.tiny{font-size:11px;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.formRow{display:flex;gap:7px;align-items:center}.formRow>*{min-width:0}.formRow .slash{flex:none;color:var(--muted)}
+.btnrow{display:flex;flex-wrap:wrap;gap:6px}.btnrow.stretch>button{flex:1}.partseg{display:grid;grid-template-columns:1fr 1fr;gap:7px}.partseg button{min-height:40px;font-size:14px}
+.sectionLabel{display:block;font-weight:700;font-size:12px;margin:9px 0 5px}.noteGrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}.noteGrid button{padding:5px 0;min-height:55px;font-size:19px;color:#143a80;background:#f4f7ff;border-color:#cedbf2}
+.choicegrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px}.choicegrid button{padding:5px 0;min-height:39px;font-size:12px}.octgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}.octgrid button{min-height:38px;padding:4px 0}.accgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}.accgrid button{font-size:12px;min-height:37px;padding:4px 0}
+.compactRow{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:7px 0}.compactRow>*{min-width:0}.compactRow>label{margin-right:auto}.compactRow select{width:auto;max-width:94px;min-height:36px;padding:6px 7px}
+.chipList{display:flex;gap:5px;overflow-x:auto;align-items:center;min-height:40px;scrollbar-width:thin;overscroll-behavior-inline:contain;padding:3px 0 7px}.chipList button{white-space:nowrap;flex:none;min-height:34px;padding:5px 8px;font-size:12px;background:#f4f7fb}.chipList button.selected{border:2px solid #316cd0;background:#dceaff;padding:4px 7px}.chipList button.bar{color:#62728a}.chipList button.meter{color:#634293}
+.status{font-size:12px;color:var(--muted);min-height:17px;margin:5px 0}.notice{font-size:12px;color:#735814;background:#fff9e7;border:1px solid #f1e5ba;padding:9px;border-radius:9px;margin-top:7px;display:none}.notice.show{display:block}
+details.toolFold{border:1px solid var(--line);border-radius:12px;background:#fff;margin:0 0 9px;padding:0 12px}details.toolFold>summary{cursor:pointer;list-style:none;font-size:14px;font-weight:700;min-height:42px;display:flex;align-items:center;justify-content:space-between}details.toolFold>summary::after{content:'⌄';color:#6980a3}details.toolFold[open]>summary::after{content:'⌃'}details.toolFold[open]>summary{border-bottom:1px solid var(--line)}details.toolFold>.foldBody{padding:11px 0}details.fold{border-top:1px solid var(--line);padding-top:9px;margin-top:10px}details.fold>summary{font-size:13px;font-weight:700;cursor:pointer}.fold>div{margin-top:9px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:7px}.actions button{min-width:0}.output{font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;min-height:150px;max-height:340px;white-space:pre;overflow:auto;background:#f5f8ff}footer{padding:5px 8px;font-size:11px;color:var(--muted)}
+.workspace{display:block}.modeBadge{font-size:11px;color:var(--muted);margin:4px 0 6px}.editList{margin-top:7px}.editActions{display:flex;flex-wrap:wrap;gap:6px}.editActions button{font-size:12px;min-height:38px;padding:5px 9px}.mutedNote{background:#f3f6fb;border-left:3px solid #aabed9;border-radius:6px;padding:8px 9px;color:#506078;font-size:12px;margin:9px 0} .optionHint{font-size:11px;color:var(--muted);margin:5px 0 0}
+.barPicker{display:flex;gap:6px;overflow-x:auto;padding:5px 0 8px;min-height:49px;scrollbar-width:thin;-webkit-overflow-scrolling:touch}
+.barPicker button{flex:none;white-space:nowrap;font-size:12px;min-height:39px}
+.barPicker button.marked{background:#e9f5ef;color:#196a49;border-color:#9bceb4}
+.barPicker button.chosen{outline:2px solid var(--accent);outline-offset:0}
+.breakActions{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.breakActions button{flex:1 1 170px}
+.copyHelp{margin-top:8px;border:1px solid #d9e5f6;border-radius:9px;padding:8px}
+.copyHelp>summary{cursor:pointer;font-size:12px;font-weight:700}
+.copyHelp p{margin:7px 0 0;font-size:12px;color:var(--muted)}
+.tieTools{margin-top:11px;padding:10px;border:1px solid #bdceed;border-radius:10px;background:#f7faff}
+.tieTools strong{font-size:13px}.tieTools .hint{margin:4px 0 8px}
+.tieActions{display:flex;flex-wrap:wrap;gap:6px}.tieActions button{flex:1 1 145px;font-size:12px;min-height:39px}
+.tieTools .status{margin-bottom:0}.chipList button.tied{background:#e9f4ed;border-color:#a5d1b9;color:#215b42}
+#tieNotice{margin-top:7px}
+@media(min-width:1050px){.workspace{display:grid;grid-template-columns:minmax(340px,1fr) minmax(550px,1.35fr);gap:12px;align-items:start}.livePanel{top:12px;min-height:270px}.liveCode{max-height:178px;min-height:110px;font-size:14px}.editor{min-width:0}.shell{padding:12px 15px 30px}.head{padding-bottom:12px}}
+@media(max-width:520px){.shell{padding:5px 6px 25px}.head{padding:5px 5px 7px}h1{font-size:16px}.version{font-size:9px}.saveStatus{font-size:10px}.panel{padding:10px}.livePanel{padding:8px 9px}.liveCode{max-height:66px;min-height:44px;font-size:12px}.liveMeta{margin:4px 0}.noteGrid{gap:3px}.noteGrid button{font-size:16px;min-height:49px}.choicegrid{gap:3px}.choicegrid button{font-size:11px;padding:4px 0;min-height:38px}.octgrid,.accgrid{gap:3px}.sectionLabel{margin:8px 0 3px}button{padding:7px 8px}.liveBtns button{padding:5px 8px}.noteGrid button{padding:5px 0}}
+
+</style>
+</head>
+<body>
+<div class="shell">
+<header class="head"><h1>ABCかんたん入力 <span class="version">v1.3.1</span></h1><span id="saveStatus" class="saveStatus" aria-live="polite">読込中</span></header>
+<div class="workspace">
+<aside class="panel livePanel" aria-label="入力結果を常時表示">
+ <div class="liveTop"><strong>入力結果（現在のパート）</strong><div class="liveBtns"><button id="copyQuick" class="primary" type="button">ABCをコピー</button></div></div>
+ <div class="liveMeta"><span id="activeInfo">🎸 ベース · C · 4/4</span><span id="liveLength">8分 / 2オクターブ</span></div>
+ <pre id="liveCode" class="liveCode" aria-live="polite">ここに入力したABCが表示されます</pre>
+ <div class="liveFoot"><span id="editingFlag">末尾へ追加</span><span>末尾を自動表示 · 本文は下の「ABC全文」</span></div>
+</aside>
+<main class="editor">
+<section class="panel" id="inputPanel">
+ <div class="partseg"><button type="button" id="partVocal">🎤 ボーカル</button><button type="button" id="partBass">🎸 5弦ベース</button></div>
+ <p class="modeBadge" id="partStatus">0音</p>
+ <span class="sectionLabel">① 長さを選ぶ（変更するまで固定）</span>
+ <div class="choicegrid" id="lengthButtons"></div>
+ <div class="btnrow" style="margin-top:5px"><button id="dot0">付点なし</button><button id="dot1">付点（・）</button><button id="dot2">複付点（・・）</button></div>
+ <span class="sectionLabel">② オクターブ（実際に鳴る高さ）</span>
+ <div class="octgrid" id="octaveButtons"></div>
+ <span class="sectionLabel">③ ♯・♭</span>
+ <div class="accgrid" id="accButtons"></div>
+ <p class="optionHint" id="keyHint"></p>
+ <span class="sectionLabel">④ 音名をタップして入力</span>
+ <div class="noteGrid" id="noteButtons"></div>
+ <div class="btnrow" style="margin-top:6px"><button class="soft" id="lowB">5弦 Low B（B0）</button><button id="restButton">休符</button><button id="undo">↶ 戻す</button></div>
+ <div class="compactRow"><label for="repeatCount">同じ音の繰り返し</label><select id="repeatCount"><option value="1">1回</option><option value="2">2回</option><option value="3">3回</option><option value="4">4回</option><option value="6">6回</option><option value="8">8回</option><option value="12">12回</option><option value="16">16回</option></select><button id="clearSelection" class="soft">選択解除・新規入力</button></div>
+ <div class="editList"><div class="compactRow" style="margin-bottom:0"><b style="font-size:12px">最近入力した音符</b><span class="small" id="countStatus"></span></div>
+ <div id="eventList" class="chipList" aria-label="最近入力した音符"></div><p id="selectionStatus" class="status">音符をタップして修正できます。</p>
+ <div class="editActions"><button id="applyDuration">長さを変更</button><button id="applyOctave">高さを変更</button><button id="insertAfter">選択音の後ろに挿入</button><button id="deleteEvent" class="danger">選択を削除</button></div>
+ <div class="tieTools" aria-label="タイの編集"><strong>♪ タイ（同じ高さの音をつなぐ）</strong><p class="hint">先の音符を選びます。次の音符と同じ高さならタイを追加・解除できます。小節をまたいでもOK。</p><div class="tieActions"><button id="toggleTie" class="soft" disabled>次の音とタイでつなぐ</button><button id="addTiedNote" disabled>同音を追加してタイ</button></div><p class="status" id="tieStatus" aria-live="polite">タイを付けたい音符を選択してください。</p></div>
+ <div id="tieNotice" class="notice" aria-live="polite"></div></div>
+ <div id="softWarning" class="notice" aria-live="polite"></div>
+</section>
+<details class="toolFold" id="songDetails"><summary id="settingSummary">曲の設定 · C / 4/4 / 90 BPM</summary><div class="foldBody">
+ <div class="field"><label for="titleInput">曲名</label><input id="titleInput" maxlength="120" placeholder="無題の曲"></div>
+ <div class="grid2" style="margin-top:9px"><div class="field"><label for="keyInput">調号（キー）</label><select id="keyInput"></select></div><div class="field"><label for="bpmInput">テンポ（BPM）</label><input id="bpmInput" type="number" min="20" max="320" inputmode="numeric"></div></div>
+ <div class="btnrow" style="margin-top:8px"><button id="applyKey" class="soft">調号だけ訂正（音程は維持）</button></div>
+ <div class="grid2" style="margin-top:12px"><div class="field"><label>基本拍子</label><div class="formRow"><input id="meterN" type="number" min="1" max="32" inputmode="numeric" aria-label="拍子分子"><span class="slash">/</span><select id="meterD" aria-label="拍子分母"><option value="2">2</option><option value="4">4</option><option value="8">8</option><option value="16">16</option></select></div></div><div class="field"><label for="baseLength">ABCの基本音価（L:）</label><select id="baseLength"><option value="8">1/8</option><option value="16">1/16</option><option value="4">1/4</option></select></div></div>
+ <button id="applySettings" style="margin-top:8px">基本拍子・L:を設定</button>
+ <div class="field" style="margin-top:12px"><label for="bassNotation">ベースのABC表記方法</label><select id="bassNotation"><option value="written">ふつうのベース譜（実音より1オクターブ上）</option><option value="sounding">実音表記（鳴る高さそのまま）</option></select></div>
+ <p class="hint">Low Bは譜面用なら B,,,、実音表記なら B,,,,。一般的なベース譜は実際の音より1オクターブ高く書きます。譜面用は再生ソフトによって高く鳴る場合があります。</p>
+ <p class="hint">キーや基本音価を変えても入力済みの音は保持します。移調は下の別メニューから行います。</p>
+ </div></details>
+<details class="toolFold"><summary>全音符一覧・まとめて修正</summary><div class="foldBody">
+ <div id="eventListAll" class="chipList" style="max-height:180px;overflow-y:auto;flex-wrap:wrap" aria-label="全音符一覧"></div>
+ <div class="compactRow"><label for="jumpIndex">番号から音符を選ぶ</label><input id="jumpIndex" type="number" min="1" inputmode="numeric" style="width:86px;min-height:36px"><button id="jumpTo" class="soft">選択</button></div>
+ <div class="field" style="margin-top:9px"><label for="batchScope">変更する範囲</label><select id="batchScope"><option value="all">今のパートすべて</option><option value="from">選択した音符から最後まで</option></select></div>
+ <button id="batchDuration" class="soft" style="margin-top:8px">選択中の長さに一括変更</button><p class="hint">間違えた場合は「↶ 戻す」を使えます。ページを閉じると「戻す」の履歴は消えます。</p>
+ </div></details>
+<details class="toolFold" id="barDetail"><summary>小節線・改段・途中の拍子変更</summary><div class="foldBody">
+ <div class="mutedNote">五線譜の改段：下の小節線を選び「この小節線で改段」を押します。小節線の数は編集中のパートを基準に表示し、設定は全パートで共有します。</div>
+ <label class="sectionLabel" for="barLineChoices">① 改段したい小節線を選ぶ</label>
+ <div id="barLineChoices" class="barPicker" aria-label="小節線の一覧"></div>
+ <p id="chosenBarStatus" class="status" aria-live="polite">まず小節線を選んでください。</p>
+ <div class="breakActions"><button id="toggleBreak" class="soft" disabled>この小節線で改段</button><button id="clearBreaks" class="danger">すべての改段を解除</button></div>
+ <p class="hint">改段位置は「何小節目の後か」で保存します。音符を修正して小節の長さが変わっても、同じ小節番号の後に改段します。小節線が存在しないパートでは適用されません。</p>
+ <div class="field" style="margin-top:12px"><label for="barMode">② 小節線の設定</label>
+ <select id="barMode"><option value="auto">自動（拍数が一致したら入れる）</option><option value="manual">手動（自分で区切る）</option></select></div>
+ <button id="addBar" style="margin-top:8px">この位置に小節線 | を追加</button>
+ <p class="hint">拍数が合わなくても入力を止めません。意図的に変則的な楽譜を作れます。</p>
+ <div class="field" style="margin-top:11px"><label>③ 曲の途中で拍子変更（現在のパートのみ）</label><div class="formRow"><input id="inlineN" type="number" min="1" max="32" inputmode="numeric" value="5" aria-label="途中拍子分子"><span class="slash">/</span><select id="inlineD" aria-label="途中拍子分母"><option value="2">2</option><option value="4">4</option><option value="8" selected>8</option><option value="16">16</option></select></div></div>
+ <button id="addMeter" style="margin-top:8px">選択位置または末尾に拍子変更</button>
+ <p class="hint">小節の途中にも追加できます。他パートとの拍子同期は未実装です。</p>
+ </div></details>
+<details class="toolFold"><summary>キーを変える・曲全体を移調</summary><div class="foldBody">
+ <p class="hint">ボーカリストの音域に合わせ、ボーカルとベースを一緒に動かします。キーの訂正（音はそのまま）は「曲の設定」で行います。</p>
+ <div class="field"><label for="transposeTarget">移調先のキー</label><select id="transposeTarget"></select></div>
+ <div class="field" style="margin-top:9px"><label for="transposeDirection">音を動かす方向</label><select id="transposeDirection"><option value="nearest">近いほう（±6半音以内）</option><option value="up">上げる</option><option value="down">下げる</option></select></div>
+ <button id="transpose" class="soft" style="margin-top:10px;width:100%">移調内容を確認する</button><p id="transposeStatus" class="status"></p>
+ </div></details>
+<details class="toolFold"><summary>ABC全文・ファイル出力</summary><div class="foldBody">
+ <p class="hint">全パートのABCテキストです。確認サイトに貼り付けできます。</p>
+ <textarea id="abcOutput" class="output" readonly spellcheck="false" aria-label="生成されたABC全文"></textarea>
+ <div class="actions" style="margin-top:7px"><button id="copyABC" class="primary">ABCをコピー（互換方式）</button><button id="copyModern">別方式でコピー</button><button id="downloadABC">.abcで保存</button><button id="selectABC">文字を選択して手動コピー</button></div>
+ <details class="copyHelp"><summary>貼り付けたときに %0A や %E7 が出る場合</summary>
+ <p>一部のiPad/SafariとWebエディタの組み合わせで、コピーした内容がURL用の文字列に変換されることがあります。まず「別方式でコピー」を試してください。直らなければ「文字を選択して手動コピー」からコピーするか、.abcファイルを使ってください。</p>
+ </details>
+ <p id="actionStatus" class="status" aria-live="polite"></p>
+ </div></details>
+<details class="toolFold"><summary>保存・バックアップ・新しい曲</summary><div class="foldBody">
+ <p class="hint">端末内に自動保存します。ただし、Safariの保存データは削除される場合があります。大切な曲は必ずファイル保存してください。iPhoneとiPadの自動同期はありません。</p>
+ <div class="actions" style="margin-top:8px"><button id="backup" class="primary">編集データを保存</button><button id="restore">編集データを読み込む</button></div>
+ <input type="file" id="restoreFile" accept=".json,application/json" hidden><p id="backupStatus" class="status"></p>
+ <details class="fold"><summary>曲を初期化する</summary><div><button id="reset" class="danger">新しい曲として初期化</button><p class="hint">先に編集データをバックアップしてください。</p></div></details>
+ </div></details>
+<footer>ABCかんたん入力 v1.3｜五線譜は別の表示システムで確認。タイは対応済み。3連符・スラー・歌詞・ドラム譜は今後の開発対象です。<br>v1.3とは別に自動保存し、旧版の保存データは残します。</footer>
+</main>
+</div></div>
+<script>
+
+(()=>{'use strict';
+const STORAGE='abc-easy-editor-v1-3-1-local-2026-10';
+const PREV_STORAGE='abc-easy-editor-v1-3-local-2026-10';
+const OLDER_STORAGE='abc-easy-editor-v1-2-local-2026-10';
+const LEGACY_STORAGE='abc-easy-editor-v1-local-2026-10';
+const LETTERS=['C','D','E','F','G','A','B'];
+const NATURAL={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+const SHARPS=['F','C','G','D','A','E','B'],FLATS=['B','E','A','D','G','C','F'];
+const MAJ={C:0,G:1,D:2,A:3,E:4,B:5,'F#':6,'C#':7,F:-1,Bb:-2,Eb:-3,Ab:-4,Db:-5,Gb:-6,Cb:-7};
+const MIN={Am:0,Em:1,Bm:2,'F#m':3,'C#m':4,'G#m':5,'D#m':6,'A#m':7,Dm:-1,Gm:-2,Cm:-3,Fm:-4,Bbm:-5,Ebm:-6,Abm:-7};
+const KEYS=Object.keys(MAJ).concat(Object.keys(MIN));
+const PARTS=['vocal','bass'];
+const $=id=>document.getElementById(id);
+const clone=obj=>JSON.parse(JSON.stringify(obj));
+const fresh=()=>({version:1,title:'無題の曲',key:'C',meter:{n:4,d:4},lDenom:8,bpm:90,barMode:'auto',bassNotation:'written',active:'bass',lineBreakBars:[],parts:{vocal:[],bass:[]}});
+let data=fresh(),history=[],selected=null,insertAt=null,selectedBar=null;
+let input={denom:8,dots:0,octave:2,acc:'key'};
+let savedOk=true;
+let tieRepairMessage='';
+function keySignature(k){let n=Object.hasOwn(MAJ,k)?MAJ[k]:(MIN[k]??0),map={C:0,D:0,E:0,F:0,G:0,A:0,B:0};(n>=0?SHARPS:FLATS).slice(0,Math.abs(n)).forEach(l=>map[l]=n>=0?1:-1);return map}
+function pitchClassKey(k){let root=k.replace(/m$/,'');let letter=root[0],alt=root.includes('#')?1:root.includes('b')?-1:0;return (NATURAL[letter]+alt+12)%12}
+function abcPitch(letter,octave){return octave<=4?letter+','.repeat(4-octave):letter.toLowerCase()+"'".repeat(octave-5)}
+function pitchMidi(n){return 12*(n.octave+1)+NATURAL[n.letter]+n.accidental}
+function pitchLabel(n){const x=n.accidental;return n.letter+({1:'♯','-1':'♭',2:'𝄪','-2':'𝄫'}[x]||'')+n.octave}
+function durationTicks(n){return (1024/n.denom)*([1,1.5,1.75][n.dots]||1)}
+function gcd(a,b){while(b){[a,b]=[b,a%b]}return a}
+function lenABC(n,lDenom){let numer=lDenom*(2**(n.dots+1)-1),denom=n.denom*(2**n.dots),g=gcd(numer,denom);numer/=g;denom/=g;return denom===1?(numer===1?'':String(numer)):(numer===1?'/'+denom:numer+'/'+denom)}
+function normalized(t){return String(t||'').replace(/[\r\n]+/g,' ').trim().slice(0,120)||'無題の曲'}
+function validateImport(o){if(!o||o.version!==1||!o.parts||!Array.isArray(o.parts.vocal)||!Array.isArray(o.parts.bass))throw Error('この版の編集データではありません');if(o.parts.vocal.length>20000||o.parts.bass.length>20000)throw Error('音符が多すぎます');if(!KEYS.includes(o.key)||!Number.isInteger(o.meter?.n)||!([2,4,8,16].includes(o.meter?.d))||o.meter.n<1||o.meter.n>32)throw Error('曲の設定が不正です');if(![4,8,16].includes(o.lDenom)||!Number.isInteger(o.bpm)||o.bpm<20||o.bpm>320)throw Error('曲の設定が不正です');for(let part of PARTS)for(let ev of o.parts[part]){if(ev.type==='note'){if(!LETTERS.includes(ev.letter)||!Number.isInteger(ev.octave)||ev.octave<0||ev.octave>7||!Number.isInteger(ev.accidental)||Math.abs(ev.accidental)>2||(ev.tieToNext!==undefined&&typeof ev.tieToNext!=='boolean'))throw Error('音符またはタイのデータが不正です')}else if(ev.type==='rest'||ev.type==='bar'){}else if(ev.type==='meter'){if(!Number.isInteger(ev.n)||ev.n<1||ev.n>32||![2,4,8,16].includes(ev.d))throw Error('拍子データが不正です')}else throw Error('未対応の記号があります');if(ev.type==='note'||ev.type==='rest'){if(![1,2,4,8,16,32].includes(ev.denom)||![0,1,2].includes(ev.dots))throw Error('音の長さが不正です')}}let breaks=Array.isArray(o.lineBreakBars)?o.lineBreakBars:[];
+ if(breaks.length>20000||breaks.some(x=>!Number.isInteger(x)||x<1||x>20000))throw Error('改段位置が不正です');
+ return {...fresh(),...o,title:normalized(o.title),bassNotation:o.bassNotation==='sounding'?'sounding':'written',barMode:o.barMode==='manual'?'manual':'auto',active:PARTS.includes(o.active)?o.active:'bass',lineBreakBars:[...new Set(breaks)].sort((a,b)=>a-b)};}
+/* タイの先は直後の「音が鳴るイベント」です。小節線と拍子変更はまたげますが、休符・別音はまたげません。 */
+function nextSounding(arr,i){for(let j=i+1;j<arr.length;j++){if(arr[j].type==='note'||arr[j].type==='rest')return j;}return -1}
+function previousSounding(arr,i){for(let j=i-1;j>=0;j--){if(arr[j].type==='note'||arr[j].type==='rest')return j;}return -1}
+function sameTiePitch(a,b){return a?.type==='note'&&b?.type==='note'&&a.letter===b.letter&&a.octave===b.octave&&a.accidental===b.accidental}
+function tieTarget(arr,i){const j=nextSounding(arr,i);return j>=0&&sameTiePitch(arr[i],arr[j])?j:-1}
+function repairTies(){let repaired=0;for(const p of PARTS){const arr=data.parts[p];for(let i=0;i<arr.length;i++){if(arr[i].type==='note'&&arr[i].tieToNext&&!(-1<tieTarget(arr,i))){delete arr[i].tieToNext;repaired++}}}return repaired}
+function breakIncomingTie(arr,i){const j=previousSounding(arr,i);if(j>=0&&arr[j].type==='note'&&arr[j].tieToNext){delete arr[j].tieToNext;tieRepairMessage='⚠ 音符の削除・変更・挿入により、直前のタイを解除しました。「↶ 戻す」で取り消せます。';return 1}return 0}
+function save(){try{localStorage.setItem(STORAGE,JSON.stringify(data));savedOk=true;$('saveStatus').textContent='✓ 自動保存済み';$('saveStatus').style.color='#2d7860'}catch(e){savedOk=false;$('saveStatus').textContent='⚠ 保存できません';$('saveStatus').style.color='#a62e36';$('backupStatus').textContent='ブラウザ内への保存に失敗しました。編集データをファイル保存してください。'}}
+function mutate(fn){history.push(clone(data));if(history.length>50)history.shift();tieRepairMessage='';fn();const repairs=repairTies();if(repairs)tieRepairMessage+=(tieRepairMessage?' ':'')+'⚠ 音程や音符の並びが変わったため、タイを'+repairs+'か所解除しました。「↶ 戻す」で取り消せます。';save();render()}
+function appendEvents(events,replace=false){mutate(()=>{let arr=data.parts[data.active];if(selected!==null&&replace){
+   // 編集対象の音符を置換。タイが一致しなくなった場合はrepairTiesが解除する。
+   const old=arr[selected],incoming=previousSounding(arr,selected);
+   const replacement=events[0];if(old.type==='note'&&old.tieToNext&&replacement.type==='note')replacement.tieToNext=true;
+   if(incoming>=0&&arr[incoming].tieToNext&&!sameTiePitch(arr[incoming],replacement))breakIncomingTie(arr,selected);
+   arr.splice(selected,1,replacement);selected=null;insertAt=null
+  }else if(insertAt!==null){
+   breakIncomingTie(arr,insertAt);arr.splice(insertAt,0,...events);insertAt+=events.length
+  }else{arr.push(...events)} });}
+function currentPitch(letter,forcedOctave){let acc=input.acc==='key'?keySignature(data.key)[letter]:Number(input.acc);return {type:'note',letter,octave:forcedOctave??input.octave,accidental:acc,denom:input.denom,dots:input.dots}}
+function addPitch(letter,forcedOctave){let rep=(selected!==null)?1:Number($('repeatCount').value);appendEvents(Array.from({length:rep},()=>currentPitch(letter,forcedOctave)),true)}
+function addRest(){let rep=selected!==null?1:Number($('repeatCount').value);appendEvents(Array.from({length:rep},()=>({type:'rest',denom:input.denom,dots:input.dots})),true)}
+/* 小節線の位置は「何番目の小節が終わるか」で管理します。
+   明示小節線と、自動で生成される小節線の両方を対象にします。 */
+function emittedBarPositions(p){
+ const arr=data.parts[p],res=[];let measure=0,barLen=1024*data.meter.n/data.meter.d;
+ for(let i=0;i<arr.length;i++){
+   const ev=arr[i];
+   if(ev.type==='bar'){res.push({eventIndex:i,number:res.length+1,kind:'manual'});measure=0;continue}
+   if(ev.type==='meter'){barLen=1024*ev.n/ev.d;continue}
+   if(ev.type!=='note'&&ev.type!=='rest')continue;
+   measure+=durationTicks(ev);
+   if(data.barMode==='auto'&&Math.abs(measure-barLen)<1e-6){res.push({eventIndex:i,number:res.length+1,kind:'auto'});measure=0}
+ }
+ return res;
+}
+function emitABC(){
+ let lines=['X:1','T:'+normalized(data.title),'M:'+data.meter.n+'/'+data.meter.d,'L:1/'+data.lDenom,'Q:1/4='+data.bpm];
+ const populated=PARTS.filter(p=>data.parts[p].length>0);
+ if(populated.length>1){lines.push('V:1 name="Vocal" clef=treble','V:2 name="Bass" clef=bass')}
+ lines.push('K:'+data.key+(populated.length===1?' clef='+(populated[0]==='bass'?'bass':'treble'):''));
+ for(let p of populated){
+   if(populated.length>1)lines.push('V:'+(p==='vocal'?1:2));
+   const arr=data.parts[p],segments=[],words=[];
+   let measure=0,barLen=1024*data.meter.n/data.meter.d,localKey=data.key,accMemory={},barNumber=0;
+   const finishBar=()=>{
+     words.push('|');barNumber++;measure=0;accMemory={};
+     if(data.lineBreakBars.includes(barNumber)){
+       segments.push(words.join(' ').replace(/\s+\|/g,' |'));words.length=0;
+     }
+   };
+   for(const ev of arr){
+     if(ev.type==='bar'){finishBar();continue}
+     if(ev.type==='meter'){words.push('[M:'+ev.n+'/'+ev.d+']');barLen=1024*ev.n/ev.d;continue}
+     let word='';
+     if(ev.type==='rest')word='z'+lenABC(ev,data.lDenom);
+     else if(ev.type==='note'){
+       const id=ev.letter+ev.octave;
+       const cur=Object.hasOwn(accMemory,id)?accMemory[id]:keySignature(localKey)[ev.letter];
+       let prefix='';
+       if(ev.accidental!==cur){prefix=ev.accidental===0?'=':ev.accidental===1?'^':ev.accidental===2?'^^':ev.accidental===-1?'_':'__';accMemory[id]=ev.accidental}
+       word=prefix+abcPitch(ev.letter,ev.octave+(p==='bass'&&data.bassNotation==='written'?1:0))+lenABC(ev,data.lDenom)+(ev.tieToNext?'-':'')
+     }else continue;
+     words.push(word);measure+=durationTicks(ev);
+     if(data.barMode==='auto'&&Math.abs(measure-barLen)<1e-6)finishBar();
+   }
+   if(words.length)segments.push(words.join(' ').replace(/\s+\|/g,' |'));
+   lines.push(...segments)
+ }
+ return lines.join('\n')+'\n'
+}
+function countMildWarnings(){let arr=data.parts[data.active],sum=0,bar=1024*data.meter.n/data.meter.d,warns=0;for(let e of arr){if(e.type==='bar'){if(Math.abs(sum-bar)>1e-6&&sum>0)warns++;sum=0}else if(e.type==='meter'){bar=1024*e.n/e.d}else if(e.type==='note'||e.type==='rest'){sum+=durationTicks(e);if(data.barMode==='auto'&&Math.abs(sum-bar)<1e-6){sum=0}else if(data.barMode==='auto'&&sum>bar+1e-6&&sum-durationTicks(e)<=bar+1e-6){warns++}}}return warns}
+function noteDisplay(ev){if(ev.type==='bar')return '|';if(ev.type==='meter')return '拍子 '+ev.n+'/'+ev.d;let d={'1':'全','2':'2分','4':'4分','8':'8分','16':'16分','32':'32分'}[ev.denom]+(ev.dots?'・'.repeat(ev.dots):'');return (ev.type==='rest'?'休符':pitchLabel(ev))+' '+d+(ev.type==='note'&&ev.tieToNext?' →タイ':'')}
+function render(){
+ for(const p of PARTS){const b=$(p==='vocal'?'partVocal':'partBass');b.classList.toggle('active',data.active===p)}
+ const arr=data.parts[data.active];const noteCount=arr.filter(x=>x.type==='note'||x.type==='rest').length;
+ $('partStatus').textContent=noteCount+'音（'+(data.active==='bass'?'ベース':'ボーカル')+'）';
+ const sig=keySignature(data.key);
+ $('keyHint').textContent='キー '+data.key+'：'+LETTERS.map(l=>l+(sig[l]===1?'♯':sig[l]===-1?'♭':'')).join(' / ');
+ $('noteButtons').replaceChildren();for(let l of LETTERS){let b=document.createElement('button');b.type='button';let shown=input.acc==='key'?sig[l]:Number(input.acc);b.textContent=l+({1:'♯','-1':'♭',0:input.acc==='key'?'':'♮'}[shown]||'');b.addEventListener('click',()=>addPitch(l));$('noteButtons').appendChild(b)}
+ const lengths=[['全',1],['2分',2],['4分',4],['8分',8],['16分',16],['32分',32]];$('lengthButtons').replaceChildren();for(let [text,den] of lengths){let b=document.createElement('button');b.textContent=text;b.classList.toggle('active',input.denom===den);b.addEventListener('click',()=>{input.denom=den;render()});$('lengthButtons').append(b)}
+ for(let d=0;d<=2;d++)$('dot'+d).classList.toggle('active',input.dots===d);
+ $('octaveButtons').replaceChildren();for(let oct=0;oct<=5;oct++){let b=document.createElement('button');b.textContent=oct;b.classList.toggle('active',input.octave===oct);b.addEventListener('click',()=>{input.octave=oct;render()});$('octaveButtons').append(b)}
+ const accidentals=[['key','調号通り'],['0','♮'],['1','♯'],['-1','♭']];$('accButtons').replaceChildren();for(let [val,label] of accidentals){let b=document.createElement('button');b.textContent=label;b.classList.toggle('active',input.acc===val);b.addEventListener('click',()=>{input.acc=val;render()});$('accButtons').append(b)}
+ function chip(ev,i){let b=document.createElement('button');b.type='button';b.textContent=(i+1)+'. '+noteDisplay(ev);b.classList.toggle('selected',selected===i);b.classList.toggle('bar',ev.type==='bar');b.classList.toggle('meter',ev.type==='meter');b.classList.toggle('tied',!!ev.tieToNext);b.setAttribute('aria-pressed',String(selected===i));b.addEventListener('click',()=>{selected=i;insertAt=null;if(ev.type==='note'||ev.type==='rest'){input.denom=ev.denom;input.dots=ev.dots;if(ev.type==='note'){input.octave=ev.octave;input.acc=String(ev.accidental)}}render()});return b}
+ $('eventList').replaceChildren();$('eventListAll').replaceChildren();
+ if(arr.length){arr.slice(-10).forEach((e,j)=>$('eventList').append(chip(e,arr.length-Math.min(arr.length,10)+j)));
+ const cap=Math.min(arr.length,500);arr.slice(0,cap).forEach((e,j)=>$('eventListAll').append(chip(e,j)));if(arr.length>cap){const m=document.createElement('span');m.textContent='先頭'+cap+'件まで表示しています。';m.className='small';$('eventListAll').append(m)}
+ }else{$('eventList').textContent='まだ音符がありません。音名ボタンから入力してください。'}
+ $('countStatus').textContent=arr.length+'項目';$('jumpIndex').max=Math.max(1,arr.length);
+ const bars=emittedBarPositions(data.active);
+ if(selectedBar!==null&&selectedBar>bars.length)selectedBar=null;
+ $('barLineChoices').replaceChildren();
+ if(!bars.length){const span=document.createElement('span');span.className='hint';span.textContent='まだ小節線がありません。小節線を入力すると選べます。';$('barLineChoices').append(span)}
+ else for(const bar of bars){const btn=document.createElement('button');btn.type='button';
+   const marked=data.lineBreakBars.includes(bar.number);
+   btn.textContent=bar.number+'小節目の後'+(marked?' ↵':'')+(bar.kind==='manual'?'（手動）':'');
+   btn.classList.toggle('marked',marked);btn.classList.toggle('chosen',selectedBar===bar.number);
+   btn.setAttribute('aria-pressed',String(selectedBar===bar.number));
+   btn.addEventListener('click',()=>{selectedBar=bar.number;render()});$('barLineChoices').append(btn)
+ }
+ const isMarked=selectedBar!==null&&data.lineBreakBars.includes(selectedBar);
+ let barHint='';
+ if(selectedBar!==null){
+   const short=PARTS.filter(p=>p!==data.active&&data.parts[p].length>0&&emittedBarPositions(p).length<selectedBar);
+   if(short.length)barHint=' ※別パートの小節線がこの位置までありません。両パートの改段が揃わない場合があります。';
+ }
+ $('chosenBarStatus').textContent=selectedBar!==null?selectedBar+'小節目の後を選択中'+(isMarked?'（改段あり）':'（改段なし）')+barHint:'改段したい小節線をタップしてください。';
+ $('toggleBreak').disabled=selectedBar===null;$('toggleBreak').textContent=isMarked?'この改段を解除する':'この小節線で改段';
+ $('clearBreaks').disabled=data.lineBreakBars.length===0;
+ $('selectionStatus').textContent=selected!==null?(selected+1)+'番目を選択中：'+noteDisplay(arr[selected]):insertAt!==null?'次に入力する音は '+(insertAt+1)+'番目へ挿入します':'表示された音符を押すと、その音を選んで修正できます。';
+ for(let id of ['applyDuration','applyOctave','deleteEvent','insertAfter'])$(id).disabled=selected===null;
+ const sel=selected!==null?arr[selected]:null;
+ const tieNext=sel?.type==='note'?nextSounding(arr,selected):-1;
+ const canToggle=sel?.type==='note'&&((sel.tieToNext&&tieNext>=0)||tieTarget(arr,selected)>=0);
+ const canAdd=sel?.type==='note'&&tieNext<0;
+ $('toggleTie').disabled=!canToggle;$('toggleTie').textContent=sel?.tieToNext?'タイを解除する':'次の音とタイでつなぐ';
+ $('addTiedNote').disabled=!canAdd;
+ $('tieStatus').textContent=sel?.type!=='note'?'タイを付けたい最初の音符を選んでください。':
+ sel.tieToNext?'タイで接続中。解除したい場合は「タイを解除する」。':
+ tieNext<0?'次の音符がありません。「同音を追加してタイ」で続きの音符を作れます。':
+ tieTarget(arr,selected)>=0?'次の同じ高さの音符につなげられます。':
+ '次の音符の高さが違うか、休符があります。タイは同じ高さの音だけをつなぎます。';
+ $('tieNotice').textContent=tieRepairMessage;$('tieNotice').classList.toggle('show',!!tieRepairMessage);$('undo').disabled=history.length===0;$('barMode').value=data.barMode;
+ let warn=countMildWarnings();$('softWarning').textContent=warn?'拍数が通常と違う箇所があります（'+warn+'件）。意図的な表現なら無視して大丈夫です。':'';$('softWarning').classList.toggle('show',warn>0);
+ const full=emitABC();$('abcOutput').value=full;
+ $('activeInfo').textContent=(data.active==='bass'?'🎸 ベース':'🎤 ボーカル')+' · '+data.key+' · '+data.meter.n+'/'+data.meter.d;
+ $('liveLength').textContent=({'1':'全音符','2':'2分','4':'4分','8':'8分','16':'16分','32':'32分'}[input.denom])+(input.dots?'・'.repeat(input.dots):'')+' / '+input.octave+'オクターブ';
+ $('editingFlag').textContent=selected!==null?'⚠ '+(selected+1)+'番目を置換中':insertAt!==null?'↳ '+(insertAt+1)+'番目へ挿入':'末尾へ追加';
+ $('editingFlag').classList.toggle('editing',selected!==null);
+ $('liveCode').textContent=partPreview(data.active)||'ここに入力したABCが表示されます';
+ $('liveCode').scrollTop=$('liveCode').scrollHeight;
+ $('bassNotation').value=data.bassNotation;
+ $('settingSummary').textContent='曲の設定 · '+data.key+' / '+data.meter.n+'/'+data.meter.d+' / '+data.bpm+' BPM';
+}
+function partPreview(p){
+ let str=emitABC(),parts=PARTS.filter(x=>data.parts[x].length>0);
+ if(!parts.includes(p))return '';
+ if(parts.length===1)return str.split('\n').slice(6).join('\n').trim();
+ const marker='\nV:'+(p==='vocal'?1:2)+'\n',idx=str.indexOf(marker);
+ if(idx<0)return '';
+ const after=str.substring(idx+marker.length),next=after.indexOf('\nV:');return (next<0?after:after.substring(0,next)).trim();
+}
+function syncForm(){ $('titleInput').value=data.title;$('keyInput').value=data.key;$('bpmInput').value=data.bpm;$('meterN').value=data.meter.n;$('meterD').value=data.meter.d;$('baseLength').value=data.lDenom;$('barMode').value=data.barMode;$('bassNotation').value=data.bassNotation;$('transposeTarget').value=data.key}
+function alertAction(s){$('actionStatus').textContent=s;}
+function updatePart(p){data.active=p;selected=null;insertAt=null;selectedBar=null;input.octave=p==='bass'?2:4;input.acc='key';save();render()}
+for(let k of KEYS){for(const id of ['keyInput','transposeTarget']){let opt=document.createElement('option');opt.value=k;opt.textContent=k+(k.endsWith('m')?'（短調）':'（長調）');$(id).append(opt)}}
+$('bassNotation').onchange=()=>{mutate(()=>{data.bassNotation=$('bassNotation').value});alertAction('ベースのABC表記を変更しました。実際に鳴る音の内部データは維持します。')};
+$('partVocal').onclick=()=>updatePart('vocal');$('partBass').onclick=()=>updatePart('bass');
+$('titleInput').oninput=()=>{data.title=$('titleInput').value;save();$('abcOutput').value=emitABC()};
+$('bpmInput').onchange=()=>{let bpm=Number($('bpmInput').value);if(!Number.isInteger(bpm)||bpm<20||bpm>320){alert('BPMは20〜320で指定してください');$('bpmInput').value=data.bpm;return}mutate(()=>data.bpm=bpm)};
+$('applyKey').onclick=()=>{let target=$('keyInput').value;if(target===data.key){alertAction('調号は変更されていません。');return}mutate(()=>data.key=target);alertAction('調号を訂正しました。音符の高さはそのままです。')};
+$('applySettings').onclick=()=>{let n=Number($('meterN').value),d=Number($('meterD').value),l=Number($('baseLength').value);if(!Number.isInteger(n)||n<1||n>32){alert('拍子の分子は1〜32で指定してください');return}mutate(()=>{data.meter={n,d};data.lDenom=l});alertAction('基本拍子とABCの基本音価を変更しました。すでに入力した音の長さは維持しています。')};
+for(let d=0;d<=2;d++)$('dot'+d).onclick=()=>{input.dots=d;render()};
+$('restButton').onclick=addRest;$('lowB').onclick=()=>{let rep=selected!==null?1:Number($('repeatCount').value);appendEvents(Array.from({length:rep},()=>({...currentPitch('B',0),accidental:0})),true)};
+$('jumpTo').onclick=()=>{let i=Number($('jumpIndex').value)-1,arr=data.parts[data.active];if(!Number.isInteger(i)||i<0||i>=arr.length){alert('番号は1〜'+arr.length+'で指定してください');return}let ev=arr[i];selected=i;insertAt=null;if(ev.type==='note'||ev.type==='rest'){input.denom=ev.denom;input.dots=ev.dots;if(ev.type==='note'){input.octave=ev.octave;input.acc=String(ev.accidental)}}render();$('selectionStatus').scrollIntoView({behavior:'smooth',block:'nearest'})};
+$('clearSelection').onclick=()=>{selected=null;insertAt=null;input.acc='key';render()};
+$('applyDuration').onclick=()=>{if(selected===null)return;let ev=data.parts[data.active][selected];if(!['note','rest'].includes(ev.type)){alert('音符または休符を選択してください');return}mutate(()=>{ev.denom=input.denom;ev.dots=input.dots})};
+$('applyOctave').onclick=()=>{if(selected===null)return;let ev=data.parts[data.active][selected];if(ev.type!=='note'){alert('音符を選択してください');return}mutate(()=>{ev.octave=input.octave;ev.accidental=input.acc==='key'?keySignature(data.key)[ev.letter]:Number(input.acc)})};
+$('deleteEvent').onclick=()=>{if(selected===null)return;mutate(()=>{let arr=data.parts[data.active];if(arr[selected].type==='note')breakIncomingTie(arr,selected);arr.splice(selected,1);selected=null;insertAt=null})};
+$('insertAfter').onclick=()=>{if(selected===null)return;insertAt=selected+1;selected=null;input.acc='key';render()};
+$('toggleTie').onclick=()=>{
+ const arr=data.parts[data.active],i=selected;if(i===null||arr[i]?.type!=='note')return;
+ if(!arr[i].tieToNext&&tieTarget(arr,i)<0){alert('次に同じ高さの音符がある場合だけタイを設定できます。');return}
+ mutate(()=>{if(arr[i].tieToNext)delete arr[i].tieToNext;else arr[i].tieToNext=true});
+ alertAction('タイの設定を変更しました。');
+};
+$('addTiedNote').onclick=()=>{
+ const arr=data.parts[data.active],i=selected;if(i===null||arr[i]?.type!=='note'||nextSounding(arr,i)>=0)return;
+ // 最後の音符から継続する。同じ音程・長さの音を追加し、元の音にタイを付ける。
+ mutate(()=>{const note=arr[i];const continuation={...note};delete continuation.tieToNext;arr.push(continuation);note.tieToNext=true;selected=arr.length-1;insertAt=null});
+ alertAction('同じ音を1つ追加してタイでつなぎました。後ろの音は長さを変更できます。');
+};
+$('undo').onclick=()=>{if(!history.length)return;data=history.pop();selected=null;insertAt=null;tieRepairMessage='';save();syncForm();render();alertAction('直前の編集を元に戻しました。')};
+$('batchDuration').onclick=()=>{let arr=data.parts[data.active];let start=$('batchScope').value==='from'?selected:0;if(start===null){alert('開始する音符を選択してください');return}let evs=arr.slice(start).filter(e=>e.type==='note'||e.type==='rest');if(!evs.length){alert('対象の音符がありません');return}if(!confirm(evs.length+'個の音符・休符を選択中の長さへ変更しますか？'))return;mutate(()=>{evs.forEach(e=>{e.denom=input.denom;e.dots=input.dots})});alertAction(evs.length+'個の音符・休符の長さを変更しました。')};
+$('barMode').onchange=()=>{let mode=$('barMode').value;selectedBar=null;mutate(()=>data.barMode=mode)};
+$('toggleBreak').onclick=()=>{
+ if(selectedBar===null)return;
+ const n=selectedBar;
+ mutate(()=>{const ix=data.lineBreakBars.indexOf(n);if(ix>=0)data.lineBreakBars.splice(ix,1);else data.lineBreakBars.push(n);data.lineBreakBars.sort((a,b)=>a-b)});
+ alertAction(''+n+'小節目の後の改段を'+(data.lineBreakBars.includes(n)?'設定':'解除')+'しました。');
+};
+$('clearBreaks').onclick=()=>{
+ if(!data.lineBreakBars.length)return;
+ if(!confirm('設定した'+data.lineBreakBars.length+'か所の改段をすべて解除しますか？'))return;
+ mutate(()=>{data.lineBreakBars=[];selectedBar=null});alertAction('改段をすべて解除しました。')
+};
+$('addBar').onclick=()=>{if(selected!==null){mutate(()=>{data.parts[data.active].splice(selected+1,0,{type:'bar'});selected=null})}else appendEvents([{type:'bar'}])};
+$('addMeter').onclick=()=>{let n=Number($('inlineN').value),d=Number($('inlineD').value);if(!Number.isInteger(n)||n<1||n>32){alert('拍子の分子は1〜32で指定してください');return}if(selected!==null){mutate(()=>{data.parts[data.active].splice(selected+1,0,{type:'meter',n,d});selected=null})}else appendEvents([{type:'meter',n,d}]);alertAction('途中拍子変更を現在のパートに挿入しました。')};
+/* 互換コピー：iPad/SafariでURLエンコード風の貼り付けになるケースの代替経路を用意 */
+function selectOutputForManualCopy(){
+ const area=$('abcOutput');
+ const fold=area.closest('details');if(fold)fold.open=true;
+ area.focus({preventScroll:true});area.select();area.setSelectionRange(0,area.value.length);
+ area.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function fallbackCopyViaSelection(str){
+ // iOS Safariの編集可能textareaを実際に選択してプレーンテキストをコピーする
+ const ta=document.createElement('textarea');ta.value=str;ta.readOnly=true;
+ ta.style.position='fixed';ta.style.left='0';ta.style.top='0';ta.style.opacity='0.02';ta.style.width='1px';ta.style.height='1px';
+ document.body.append(ta);ta.focus();ta.select();ta.setSelectionRange(0,str.length);
+ let ok=false;try{ok=document.execCommand('copy')}finally{ta.remove()};return ok
+}
+async function copyABCText(preferLegacy){
+ const str=emitABC();let kind='';
+ try{
+   if(preferLegacy){
+     if(fallbackCopyViaSelection(str))kind='互換方式';
+     else if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(str);kind='標準方式'}
+     else throw Error('copy blocked')
+   }else{
+     if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(str);kind='標準方式'}
+     else if(fallbackCopyViaSelection(str))kind='互換方式';
+     else throw Error('copy blocked')
+   }
+   alertAction('ABCをコピーしました（'+kind+'）。貼り付け結果を確認してください。');
+   $('editingFlag').textContent='✓ コピーしました（'+kind+'）';$('editingFlag').classList.remove('editing')
+ }catch(err){
+   const fold=$('abcOutput').closest('details');if(fold)fold.open=true;
+   selectOutputForManualCopy();
+   alertAction('自動コピーできませんでした。選択された文字を長押しして「コピー」を選んでください。')
+ }
+}
+$('copyQuick').onclick=()=>copyABCText(true);
+$('copyABC').onclick=()=>copyABCText(true);
+$('copyModern').onclick=()=>copyABCText(false);
+$('selectABC').onclick=()=>selectOutputForManualCopy();
+function download(name,content,type){let blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),15000)}
+function safeName(){return normalized(data.title).replace(/[\\/:*?"<>|]/g,'_').slice(0,50)}
+$('downloadABC').onclick=()=>{download(safeName()+'.abc',emitABC(),'text/plain;charset=utf-8');alertAction('ABCファイルを作成しました。保存先はブラウザのダウンロード一覧で確認してください。')};
+$('backup').onclick=()=>{download(safeName()+'_編集用.json',JSON.stringify(data,null,2),'application/json;charset=utf-8');$('backupStatus').textContent='編集用ファイルを作成しました。iCloud Driveなどに保存してください。'};
+$('restore').onclick=()=>$('restoreFile').click();
+$('restoreFile').onchange=async e=>{let file=e.target.files?.[0];if(!file)return;try{if(file.size>2_000_000)throw Error('ファイルが大きすぎます');let obj=validateImport(JSON.parse(await file.text()));if(!confirm('現在の編集中の曲を読み込んだ曲で置き換えます。続けますか？'))return;history.push(clone(data));data=obj;selected=null;insertAt=null;tieRepairMessage='';save();syncForm();render();$('backupStatus').textContent='編集用データを読み込みました。'}catch(err){alert('読み込みできませんでした：'+err.message)}finally{e.target.value=''}};
+$('reset').onclick=()=>{if(!confirm('現在の曲を初期化します。編集内容をバックアップしましたか？'))return;mutate(()=>{data=fresh();selected=null;insertAt=null;tieRepairMessage='';input={denom:8,dots:0,octave:2,acc:'key'}});syncForm();alertAction('新しい曲を開始しました。')};
+function spellMidi(midi,key){let sig=keySignature(key),best=null;for(let octave=0;octave<=7;octave++)for(let letter of LETTERS){let alter=midi-(12*(octave+1)+NATURAL[letter]);if(Math.abs(alter)>2)continue;let score=Math.abs(alter-sig[letter])*4+Math.abs(alter)*.3+(Math.abs(alter)>1?7:0);if(alter!==sig[letter])score+=.1;let p={letter,octave,accidental:alter,score};if(!best||score<best.score)best=p}if(!best)throw Error('対応音域の外です');return best}
+$('transpose').onclick=()=>{let target=$('transposeTarget').value,from=data.key;if(from===target){$('transposeStatus').textContent='現在と同じキーです。';return}let delta=(pitchClassKey(target)-pitchClassKey(from)+12)%12;let direction=$('transposeDirection').value;if(direction==='down'){if(delta!==0)delta-=12}else if(direction==='nearest'&&delta>6){delta-=12}
+let all=PARTS.flatMap(p=>data.parts[p].filter(e=>e.type==='note'));if(!all.length){alert('移調する音符がありません');return}
+let transformed;try{transformed=all.map(e=>spellMidi(pitchMidi(e)+delta,target))}catch(e){alert('移調先の音域が対応範囲を超えました。');return}
+let low=PARTS.some(p=>p==='bass'&&data.parts[p].some(e=>e.type==='note'&&pitchMidi(e)+delta<23));let msg='キー '+from+' → '+target+'、'+(delta>=0?'+':'')+delta+'半音。ベースとボーカルの合計'+all.length+'音を移調します。'+(low?'\n注意：5弦ベースのLow B（B0）より低い音ができます。':'')+'\n実行しますか？';if(!confirm(msg))return;
+mutate(()=>{let j=0;for(let p of PARTS)for(let e of data.parts[p])if(e.type==='note'){let n=transformed[j++];e.letter=n.letter;e.octave=n.octave;e.accidental=n.accidental}data.key=target});$('keyInput').value=target;$('transposeStatus').textContent='移調しました（'+(delta>=0?'+':'')+delta+'半音）。間違えたら「ひとつ戻す」を押してください。';alertAction('全パートを移調しました。')};
+try{let own=localStorage.getItem(STORAGE),previous=localStorage.getItem(PREV_STORAGE),older=localStorage.getItem(OLDER_STORAGE),legacy=localStorage.getItem(LEGACY_STORAGE);
+ if(own){data=validateImport(JSON.parse(own))}
+ else if(previous){data=validateImport(JSON.parse(previous));$('backupStatus').textContent='v1.3の保存データをv1.3.1へコピーしました。旧版のデータは残しています。';}
+ else if(older){data=validateImport(JSON.parse(older));$('backupStatus').textContent='v1.2の保存データをv1.3.1へコピーしました。旧版のデータは残しています。';}
+ else if(legacy){data=validateImport(JSON.parse(legacy));$('backupStatus').textContent='v1.1の保存データをv1.3.1へコピーしました。旧版のデータは残しています。';}
+}catch(e){$('backupStatus').textContent='以前の保存データを読み込めませんでした。新しい曲として開きます。'}
+input.octave=data.active==='bass'?2:4;syncForm();save();render();
+})();
+
+</script>
+</body></html>
